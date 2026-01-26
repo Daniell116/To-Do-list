@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var toDoList = ToDoList()
+    @State private var showingAddItemView = false
     var body: some View {
         NavigationView {
             List {
@@ -22,15 +23,24 @@ struct ContentView: View {
                         Text(item.dueDate, style: .date)
                     }
                 }
-                    .onMove(perform: { indices, newOffset in
-                        toDoList.items.move(fromOffsets: indices, toOffset: newOffset)
-                    })
-                    .onDelete(perform: { IndexSet in
-                        toDoList.items.remove(atOffsets: IndexSet)
-                    })
-                }
-                .navigationBarTitle("To do list", displayMode: .inline)
-                .navigationBarItems(leading: EditButton())
+                .onMove(perform: { indices, newOffset in
+                    toDoList.items.move(fromOffsets: indices, toOffset: newOffset)
+                })
+                .onDelete(perform: { IndexSet in
+                    toDoList.items.remove(atOffsets: IndexSet)
+                })
+            }
+            .sheet(isPresented: $showingAddItemView) {
+                AddItemView()
+                    .environment(toDoList)
+            }
+            .navigationBarTitle("To do list", displayMode: .inline)
+            .navigationBarItems(leading: EditButton(),
+                                trailing: Button(action: {
+                showingAddItemView = true
+            }, label: {
+                Image(systemName: "plus")
+            }))
             
         }
     }
